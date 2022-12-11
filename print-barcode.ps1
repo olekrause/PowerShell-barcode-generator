@@ -51,8 +51,6 @@ function Print-Barcode {
 	foreach ($char in $char_array) {
 		$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
 		$sum = $sum + ($counter * $barcode_array.data."$char"[1])
-		Write-Host $sum
-		Write-Host $counter
 		$counter++
 	}
 	$sum = $sum + 104
@@ -70,5 +68,3 @@ function Print-Barcode {
 		Write-Host "`r"
 	}
 }
-
-Print-Barcode -string "Test~~"
