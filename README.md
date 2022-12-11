@@ -1,7 +1,7 @@
-# Print-Barcode
+# PowerShell-barcode-generator
 Generate Code128 barcodes directly to the console.
 
-![graphic](https://user-images.githubusercontent.com/44164506/206913226-b6cc98e5-77f5-4818-bd66-afa83f4a35b1.png)
+![Code128 representation of "PowerShell-barcode-generator"](https://user-images.githubusercontent.com/44164506/206922469-059a6d25-2310-40d9-8a9b-aee946b7ade8.png)
 
 ## Why did I build this?
 
@@ -20,5 +20,5 @@ You just import the function (or copy it into your script):
 
  And start using it:
  ```
- Print-Barcode -String [STRING TO PRINT]
+ Write-Barcode -String [STRING TO PRINT]
  ```
