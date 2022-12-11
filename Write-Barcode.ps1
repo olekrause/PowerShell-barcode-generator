@@ -1,13 +1,13 @@
-function Print-Barcode {
+function Write-Barcode {
 	param (
-		[string]$string
+		[string]$String
 	)
 	function W_H {
 		param (
-			$string
+			$String
 		)
-		$string_array = $string.toCharArray()
-		foreach ($entry in $string_array) {
+		$String_array = $String.toCharArray()
+		foreach ($entry in $String_array) {
 			if ($entry -eq "1") {
 				Write-Host " " -NoNewline -BackgroundColor Black -ForegroundColor Black
 			}
@@ -44,7 +44,7 @@ function Print-Barcode {
 	$start_code = "000000000011010010000"
 	$stop_code = "11000111010110000000000"
 		
-	$char_array = $string.ToCharArray()
+	$char_array = $String.ToCharArray()
 	$sum = 0
 	$counter = 1
 	
@@ -57,7 +57,7 @@ function Print-Barcode {
 	$checksum = $sum % 103
 	
 	
-	for ($i = 0; $i -lt $string.Length; $i++) {
+	for ($i = 0; $i -lt $String.Length; $i++) {
 		W_H -string $start_code
 		foreach ($char in $char_array) {
 			$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
@@ -68,3 +68,5 @@ function Print-Barcode {
 		Write-Host "`r"
 	}
 }
+
+write-Barcode -String "power"
