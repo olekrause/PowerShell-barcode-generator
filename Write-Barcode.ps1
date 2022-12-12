@@ -68,5 +68,3 @@ function Write-Barcode {
 		Write-Host "`r"
 	}
 }
-
-write-Barcode -String "power"

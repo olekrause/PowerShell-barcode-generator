@@ -30,16 +30,3 @@ You just import the function (or copy it into your script):
 ## Why on earth am I using colored spaces??
 
 My original plan was, to use the unicode full block (this bad boy right here --> █ ) for all the one's (black lines) in the barcode. This did not work, because **all** my editors kept saving this block as "U+2588" instead of "ASCII 219"! When you use these Unicode characters in your code and do a ```Write-Host``` they come out all scrambled. All my beautiful "█" were turned into "â-^". This happens because PowerSell and command prompt use codepage 437 (you can check this by entering ```mode``` into your command prompt). This codepage only supports single byte ASCII-characters. So my pretty three byte character was turned into three seperate characters.
-
-### Explenation why exactly the block turned into "â-^"
-
-The block coresponds to these three hex values ([source](https://www.fileformat.info/info/unicode/char/2588/index.htm)):
-```
-0xE2 0x96 0x88
-```
-
-Now guess what those translate into ([source](https://www.freecodecamp.org/news/ascii-table-hex-to-ascii-value-character-code-chart-2/))...
-```
-0xE2	0x96	0x88
- â		 -		^
-```
