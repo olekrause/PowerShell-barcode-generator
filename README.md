@@ -3,6 +3,9 @@ Generate Code128 barcodes directly in the console.
 
 ![Code128 representation of "PowerShell-barcode-generator"](https://user-images.githubusercontent.com/44164506/206922469-059a6d25-2310-40d9-8a9b-aee946b7ade8.png)
 
+![Code128 representation of "PowerShell-barcode-generator"](https://user-images.githubusercontent.com/44164506/208256651-eeff20ff-f5ec-4767-ac94-dcd2a3cc599e.png)
+
+
 ## Why did I build this?
 
 I needed a way to generate barcodes from MAC-addresses without leaving PowerShell. There were a few ways to accomplish this already but I was working with WinPE at the time, which limited my options significantly. So I came up with this solution.
