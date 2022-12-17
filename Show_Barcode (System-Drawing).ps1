@@ -7,9 +7,9 @@ function Show-Barcode {
 	$pen = new-object Drawing.Pen Black
 	$pen.Width = 2
 	$form = New-Object Windows.Forms.Form
+	$form.Text = "Show-Barcode"
 	$form.Width = (((($String.length) * 12) + 60) + $pen.width) * 2
-	Write-Host $form.Width
-	$form.Height = 480
+	$form.Height = 250
 	$form.AutoScale = $true
 	$formGraphics = $form.createGraphics()
 	
