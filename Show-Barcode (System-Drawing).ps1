@@ -2,25 +2,24 @@ function Show-Barcode {
 	param (
 		[string]$String
 	)
+
 	[reflection.assembly]::LoadWithPartialName( "System.Windows.Forms")
 	[reflection.assembly]::LoadWithPartialName( "System.Drawing")
+	#	Creates the pen
 	$pen = new-object Drawing.Pen Black
 	$pen.Width = 2
+
+	#	Creates the form (the window)
 	$form = New-Object Windows.Forms.Form
-	$form.Text = "Show-Barcode"
-	$form.Width = (((($String.length) * 12) + 60) + $pen.width) * 2
-	$form.Height = 250
-	$form.AutoScale = $true
+	$form.Text = "Show-Barcode ($String)"
+	$form.Width = (($String.length * 11 + 60) + $pen.width) * 2
+	$form.Height = 200
 	$formGraphics = $form.createGraphics()
 	
-	$Label = New-Object System.Windows.Forms.Label
-	$Label.Text = "$String"
-	$label.AutoSize = $true
-	$Label.Location = New-Object System.Drawing.Point(10, 10)
-	$form.Controls.Add($Label)
+	$show_array = @()
 	
-	$X_coord = 10
-	
+	$start_code = "000000000011010010000"
+	$stop_code = "11000111010110000000000"
 	$barcode_array = @{
 		"checksum" = @(
 			"11011001100", "11001101100", "11001100110", "10010011000", "10010001100", "10001001100", "10011001000", "10011000100", "10001100100", "11001001000",
@@ -46,13 +45,10 @@ function Show-Barcode {
 	}
 	
 	
-	$start_code = "000000000011010010000"
-	$stop_code = "11000111010110000000000"
-	
 	$char_array = $String.ToCharArray()
 	$sum = 0
 	$counter = 1
-	
+	#Checksum
 	foreach ($char in $char_array) {
 		$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
 		$sum = $sum + ($counter * $barcode_array.data."$char"[1])
@@ -60,84 +56,34 @@ function Show-Barcode {
 	}
 	$sum = $sum + 104
 	$checksum = $sum % 103
-	$X_coord = 0
 	
+	foreach ($char in $char_array) {
+		$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
+		$data_array += $barcode_array.data."$char"[0]
+	}
+	
+	$show_array += $start_code
+	$show_array += $data_array
+	$show_array += $barcode_array.checksum[($checksum)]
+	$show_array += $stop_code
+	$show_array = $show_array.ToCharArray()
+
 	$form.add_paint({
-			
-			#	Start Code
-			$String_array = $start_code.toCharArray()
-			foreach ($entry in $String_array) {
+	
+			foreach ($entry in $show_array) {
 				if ($entry -eq "1") {
 					$X_coord = $X_coord + $pen.Width
-					
+			
 					$pen.Color = "Black"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
+					$formGraphics.DrawLine($pen, $X_coord, 0, $X_coord, 190)
 				}
 				elseif ($entry -eq "0") {
 					$X_coord = $X_coord + $pen.Width
-					
-					$pen.Color = "White"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-				}	
-			}
-	
-			#	Data
-			foreach ($char in $char_array) {
-				$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
-				
 			
-				$String_array = $barcode_array.data."$char"[0].toCharArray()
-				foreach ($entry in $String_array) {
-					if ($entry -eq "1") {
-						$X_coord = $X_coord + $pen.Width
-						
-						$pen.Color = "Black"
-						$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-					}
-					elseif ($entry -eq "0") {
-						$X_coord = $X_coord + $pen.Width
-						
-						$pen.Color = "White"
-						$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-					}	
-				}
-	
-				
-			}
-			
-			#	Checksum
-			$String_array = $barcode_array.checksum[($checksum)].toCharArray()
-			foreach ($entry in $String_array) {
-				if ($entry -eq "1") {
-					$X_coord = $X_coord + $pen.Width
-					
-					$pen.Color = "Black"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-				}
-				elseif ($entry -eq "0") {
-					$X_coord = $X_coord + $pen.Width
-					
 					$pen.Color = "White"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
+					$formGraphics.DrawLine($pen, $X_coord, 0, $X_coord, 190)
 				}	
 			}
-			#	Stop Code
-			$String_array = $stop_code.toCharArray()
-			foreach ($entry in $String_array) {
-				if ($entry -eq "1") {
-					$X_coord = $X_coord + $pen.Width
-					
-					$pen.Color = "Black"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-				}
-				elseif ($entry -eq "0") {
-					$X_coord = $X_coord + $pen.Width
-					
-					$pen.Color = "White"
-					$formGraphics.DrawLine($pen, $X_coord, 33, $X_coord, 190)
-				}	
-			}
-	
 		})
 	
 	$form.ShowDialog()
