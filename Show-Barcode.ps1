@@ -125,4 +125,3 @@ function Show-Barcode {
 	
 	$form.ShowDialog()
 }
-Show-Barcode -String "macmacoangporngwerongorng"
