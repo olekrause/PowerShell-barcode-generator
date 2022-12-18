@@ -1,23 +1,56 @@
+<#
+.SYNOPSIS
+Draws the Code128-B barcode for a given string
+
+.DESCRIPTION
+This Script uses System.Windows.Forms and System.Drawing to draw a barcode in a new window.
+
+.PARAMETER String
+The String you want to convert into a barcode.
+
+.EXAMPLE
+Show-Barcode -String "Hi mom!"
+
+.NOTES
+It will check for illegal characters ;)
+
+#>
 function Show-Barcode {
 	param (
-		[string]$String
+		[parameter(Mandatory = $true)][String]$String
 	)
-
+	#	Convert the string to an array to check for illegal characters.
+	$illegal_array = $String.ToCharArray()
+	#	Goes through every character in the string.
+	foreach ($illegal_char in $illegal_array) {
+		$decimal = [int[]][char[]]$illegal_char #	Convert character into decimal value.
+		if ($decimal -ge 127) {
+			#	If the decimal value of the character is 127 or more, the function will exit with the below text being written to console.
+			Write-Host "Illegal character! --> $illegal_char" -ForegroundColor Red 
+			exit
+		}
+	}
+	#	Loads the neccessary dll's for creating the form.
 	[reflection.assembly]::LoadWithPartialName( "System.Windows.Forms")
 	[reflection.assembly]::LoadWithPartialName( "System.Drawing")
-	#	Creates the pen
+	#	Creates the pen.
 	$pen = new-object Drawing.Pen Black
 	$pen.Width = 2
 
-	#	Creates the form (the window)
+	#	Creates the form (the window).
 	$form = New-Object Windows.Forms.Form
 	$form.Text = "Show-Barcode ($String)"
 	$form.Width = (($String.length * 11 + 60) + $pen.width) * 2
 	$form.Height = 200
 	$formGraphics = $form.createGraphics()
 	
+	#	Initializes the show_array variable
 	$show_array = @()
 	
+	#	All the data for the barcode generation is store in these arrays.
+	#	(Little rant coming up) Why on earth did Norman J. Woodland not just use the binary encoding for each character???
+	#	This entire array only exists because this guy didn't want to use binary.
+	#	He acutally went through all these characters and thought to himself "Oh boy, let's NOT use binary, I will play God and decide where those one's and zero's need to be :)"
 	$start_code = "000000000011010010000"
 	$stop_code = "11000111010110000000000"
 	$barcode_array = @{
@@ -44,30 +77,34 @@ function Show-Barcode {
 		}
 	}
 	
-	
+	#	Converts the String into a char array and initialitzes the variables for checksum calculation.
 	$char_array = $String.ToCharArray()
 	$sum = 0
 	$counter = 1
-	#Checksum
+	#	This calculates the checksum.
+	#	It goes through each character. Then it multiplies each character by it's position, and adds that to the sum.
 	foreach ($char in $char_array) {
 		$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
 		$sum = $sum + ($counter * $barcode_array.data."$char"[1])
 		$counter++
 	}
+	#	In the end , 104 is added to the sum and you apply(?) modulo 103 to it. The rest of thi modulo operation is your checksum.
 	$sum = $sum + 104
 	$checksum = $sum % 103
-	
+	#	Now every character is converted to hexadecimal, and the binary data from the barcode_array is added to data_array
 	foreach ($char in $char_array) {
 		$char = [System.String]::Format("{0:X2}", [System.Convert]::ToUInt32($char))
 		$data_array += $barcode_array.data."$char"[0]
 	}
 	
+	#	The show_array combines all data (so start code, data, checksum, and stop code)
 	$show_array += $start_code
 	$show_array += $data_array
 	$show_array += $barcode_array.checksum[($checksum)]
 	$show_array += $stop_code
-	$show_array = $show_array.ToCharArray()
-
+	$show_array = $show_array.ToCharArray() #	The show_array is then converted into a character array (so that each bit can be drawn seperately)
+	
+	#	$form.add_paint is used to acutally paint everything
 	$form.add_paint({
 	
 			foreach ($entry in $show_array) {
@@ -88,3 +125,4 @@ function Show-Barcode {
 	
 	$form.ShowDialog()
 }
+Show-Barcode -String "macmacoangporngwerongorng"
