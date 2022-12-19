@@ -43,6 +43,14 @@ function Show-Barcode {
 	$form.Width = (($String.length * 11 + 60) + $pen.width) * 2
 	$form.Height = 200
 	$formGraphics = $form.createGraphics()
+
+	#	Closes the wndow when "Enter" is pressed.
+	$form_KeyDown = [System.Windows.Forms.KeyEventHandler] {
+		if ($_.KeyCode -eq 'Enter') {
+			$form.Close()
+		}
+	}
+	$form.Add_KeyDown($form_KeyDown)
 	
 	#	Initializes the show_array variable
 	$show_array = @()
@@ -122,6 +130,5 @@ function Show-Barcode {
 				}	
 			}
 		})
-	
 	$form.ShowDialog()
 }
