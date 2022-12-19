@@ -1,18 +1,35 @@
+<#
+.SYNOPSIS
+Generates Code128 barcodes from a given string
+
+.DESCRIPTION
+The function "Generate-Barcode" generates Code128-B barcodes from a given string.
+
+.PARAMETER String
+Whatever Text you want to turn into a barcode
+
+.EXAMPLE
+Generate-Barcode -String "Hi mom!"
+
+#>
 function Write-Barcode {
 	param (
 		[string]$String
 	)
+	# The function "W_H" turns the binary data in $barcode_array into black an white spaces.
 	function W_H {
 		param (
 			$String
 		)
+		# The given string (in this case, each character of the barcode's binary data)
 		$String_array = $String.toCharArray()
+		# Goes through the array
 		foreach ($entry in $String_array) {
 			if ($entry -eq "1") {
-				Write-Host " " -NoNewline -BackgroundColor Black -ForegroundColor Black
+				Write-Host " " -NoNewline -BackgroundColor Black -ForegroundColor Black	# If the char in the array is euqal to 1, a BLACK space in printed
 			}
 			elseif ($entry -eq "0") {
-				Write-Host " " -NoNewline -BackgroundColor White -ForegroundColor White
+				Write-Host " " -NoNewline -BackgroundColor White -ForegroundColor White	# If the char in the array is euqal to 0, a WHITE space in printed
 			}
 		}
 	}
