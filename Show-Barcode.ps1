@@ -39,10 +39,19 @@ function Show-Barcode {
 
 	#	Creates the form (the window).
 	$form = New-Object Windows.Forms.Form
-	$form.Text = "Show-Barcode ($String)"
+	$form.Text = "$String (Show-Barcode)"
 	$form.Width = (($String.length * 11 + 60) + $pen.width) * 2
 	$form.Height = 200
 	$formGraphics = $form.createGraphics()
+
+    #Create text to be shown below the barcode
+    $Label = New-Object -TypeName System.Windows.Forms.Label
+    $Label.Text = $String
+    $label.Size = New-Object System.Drawing.Size($form.width,20)
+    $Label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+    $Label.Location = New-Object System.drawing.point(0,142)
+    $form.Controls.Add($Label)
+
 
 	#	Closes the wndow when "Enter" is pressed.
 	$form_KeyDown = [System.Windows.Forms.KeyEventHandler] {
